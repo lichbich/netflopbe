@@ -15,10 +15,20 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Initialize Firebase Admin - CÁCH ĐƠN GIẢN NHẤT
+// Initialize Firebase Admin
 try {
-  if (process.env.FB_PRIVATE_KEY) {
-    // Nếu chạy trên Vercel
+  const serviceAccountJson = process.env.FIREBASE_PRIVATE_KEY_JSON || process.env.FIREBASE_SERVICE_ACCOUNT || process.env.FB_SERVICE_ACCOUNT;
+  
+  if (serviceAccountJson) {
+    // Cách 1: Copy toàn bộ nội dung file JSON vào 1 biến môi trường (FIREBASE_PRIVATE_KEY_JSON)
+    const serviceAccount = JSON.parse(serviceAccountJson);
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+      databaseURL: "https://unichat-acfc2-default-rtdb.firebaseio.com"
+    });
+    console.log("Firebase initialized via Single JSON ENV");
+  } else if (process.env.FB_PRIVATE_KEY) {
+    // Cách 2: Tách thành 3 biến riêng lẻ (FB_PROJECT_ID, FB_CLIENT_EMAIL, FB_PRIVATE_KEY)
     admin.initializeApp({
       credential: admin.credential.cert({
         projectId: process.env.FB_PROJECT_ID,
@@ -27,9 +37,9 @@ try {
       }),
       databaseURL: "https://unichat-acfc2-default-rtdb.firebaseio.com"
     });
-    console.log("Firebase initialized via Simple ENV");
-  } else {
-    // Nếu chạy ở Local (dùng file json)
+    console.log("Firebase initialized via Simple 3 ENVs");
+  } else if (existsSync(path.resolve('./serviceAccountKey.json'))) {
+    // Cách 3: Chạy ở Local bằng file JSON trực tiếp
     const serviceAccount = JSON.parse(readFileSync(path.resolve('./serviceAccountKey.json'), 'utf8'));
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
