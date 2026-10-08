@@ -26,6 +26,15 @@ export async function initDb() {
       date TEXT NOT NULL,
       FOREIGN KEY (memberId) REFERENCES members (id)
     );
+    CREATE TABLE IF NOT EXISTS users (
+      id TEXT PRIMARY KEY,
+      username TEXT UNIQUE NOT NULL,
+      password TEXT NOT NULL,
+      name TEXT NOT NULL
+    );
+
+    INSERT OR IGNORE INTO users (id, username, password, name)
+    VALUES ('1', 'lichdt', '389363', 'lichdt');
   `);
 
   return db;
