@@ -17,8 +17,6 @@
     "express": "^5.2.1",
     "express-async-handler": "^1.2.0",
     "firebase-admin": "^13.9.0",
-    "sqlite": "^5.1.1",
-    "sqlite3": "^6.0.1",
     "uuid": "^14.0.0"
   },
   "devDependencies": {
